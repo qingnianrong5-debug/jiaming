@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>家道·家明 · 内观</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --ink:#1a1a16;--ink2:#4a4a42;--ink3:#8a8a80;
+  --paper:#faf8f3;--warm:#f4f0e6;--warmer:#ede8da;
+  --jade:#1D9E75;--jade-light:#E1F5EE;
+  --gold:#c8a96e;--gold-bg:rgba(200,169,110,0.07);
+  --bd:rgba(26,26,24,0.09);--red:#8b2000;
+}
+html,body{min-height:100%;font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--paper);color:var(--ink);line-height:1.75;font-size:15px;}
+.pg{max-width:540px;margin:0 auto;padding:0 20px 80px;}
+.page{display:none;}.page.active{display:block;}
+
+/* ── 封面 ── */
+#page-cover .inner{text-align:center;padding:72px 0 56px;display:flex;flex-direction:column;align-items:center;min-height:90vh;}
+.seal{width:52px;height:52px;border-radius:50%;border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;background:var(--gold-bg);}
+.seal-ch{font-size:17px;font-weight:300;color:var(--ink);}
+.brand{font-size:19px;font-weight:400;letter-spacing:.3em;color:var(--ink);margin-bottom:6px;}
+.brand-en{font-size:9px;color:var(--ink3);letter-spacing:.3em;margin-bottom:20px;}
+.gold-sep{width:32px;height:1px;background:var(--gold);margin:0 auto 28px;}
+.cover-title{font-size:15px;color:var(--ink2);letter-spacing:.12em;line-height:2;margin-bottom:12px;}
+.cover-desc{font-size:13px;color:var(--ink3);line-height:2.2;max-width:260px;margin:0 auto;}
+.cover-mid{margin:auto;padding:32px 0;}
+.dims-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:32px;}
+.dim-pill{font-size:10px;letter-spacing:.1em;color:var(--ink3);border:.5px solid var(--bd);border-radius:20px;padding:3px 10px;}
+.start-btn{padding:14px 52px;background:var(--ink);border:none;border-radius:40px;font-size:15px;color:#fff;cursor:pointer;letter-spacing:.1em;}
+.cover-note{font-size:11px;color:var(--ink3);margin-top:12px;letter-spacing:.04em;}
+
+/* ── 答题页 ── */
+#page-quiz .hd{display:flex;justify-content:space-between;align-items:center;padding:18px 0 12px;border-bottom:.5px solid var(--bd);margin-bottom:16px;}
+.quiz-brand{font-size:13px;letter-spacing:.12em;color:var(--ink2);}
+.quiz-num{font-size:12px;color:var(--ink3);}
+.prog-bar{height:1.5px;background:var(--bd);margin-bottom:24px;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--jade));width:0%;transition:width .3s;}
+.dim-label{text-align:center;margin-bottom:16px;}
+.dim-tag{display:inline-block;font-size:10px;letter-spacing:.14em;color:var(--gold);border:.5px solid rgba(200,169,110,.35);border-radius:20px;padding:3px 14px;}
+.q-card{background:#fff;border-radius:18px;padding:26px 20px 20px;border:.5px solid var(--bd);margin-bottom:16px;}
+.q-text{font-size:18px;font-weight:450;line-height:1.6;color:var(--ink);margin-bottom:22px;}
+.opts{display:flex;flex-direction:column;gap:10px;}
+.opt{padding:14px 16px;border:.5px solid var(--bd);border-radius:12px;font-size:14px;color:var(--ink2);background:#fff;text-align:left;cursor:pointer;line-height:1.5;transition:background .12s,border-color .12s;}
+.opt:active,.opt.sel{background:var(--warm);border-color:var(--gold);color:var(--ink);}
+
+/* ── 推演动画页 ── */
+#page-loading{text-align:center;}
+#page-loading .inner{padding:100px 0 80px;min-height:85vh;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.loading-seal{width:64px;height:64px;border-radius:50%;border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;background:var(--gold-bg);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:.7;transform:scale(.97);}50%{opacity:1;transform:scale(1.03);}}
+.loading-ch{font-size:22px;font-weight:300;color:var(--gold);}
+.loading-title{font-size:15px;color:var(--ink2);letter-spacing:.12em;margin-bottom:32px;}
+.loading-lines{text-align:left;max-width:280px;margin:0 auto;}
+.loading-line{font-size:13px;color:var(--ink3);letter-spacing:.06em;line-height:2.4;opacity:0;transition:opacity .6s;}
+.loading-line.show{opacity:1;}
+.loading-dots{display:flex;justify-content:center;gap:6px;margin-top:32px;}
+.ldot{width:5px;height:5px;border-radius:50%;background:var(--gold);animation:ltp 1.4s infinite;}
+.ldot:nth-child(2){animation-delay:.2s;}.ldot:nth-child(3){animation-delay:.4s;}
+@keyframes ltp{0%,80%,100%{opacity:.2;transform:scale(.8);}40%{opacity:1;transform:scale(1);}}
+
+/* ── 报告页 ── */
+.rcov{text-align:center;padding:36px 0 24px;}
+.rcov::after{content:'';display:block;width:36px;height:1px;background:var(--gold);margin:12px auto 0;}
+.rseal{width:52px;height:52px;border-radius:50%;border:1px solid var(--gold);background:var(--gold-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;}
+.rseal-ch{font-size:17px;font-weight:300;color:var(--ink);}
+.rtitle{font-size:14px;letter-spacing:.16em;color:var(--ink);}
+.rdate{font-size:11px;color:var(--ink3);margin-top:5px;}
+
+/* 类型揭晓 */
+.type-block{text-align:center;padding:24px 0 20px;border-bottom:.5px solid var(--bd);margin-bottom:20px;}
+.type-label{font-size:10px;letter-spacing:.2em;color:var(--ink3);margin-bottom:10px;}
+.type-name{font-size:22px;font-weight:450;color:var(--ink);line-height:1.5;margin-bottom:8px;}
+.type-tag{display:inline-block;padding:4px 16px;border:.5px solid var(--red);border-radius:20px;font-size:12px;color:var(--red);letter-spacing:.04em;}
+
+/* 总述 */
+.summary-block{background:var(--ink);border-radius:14px;padding:22px 20px;margin-bottom:16px;color:#fff;}
+.summary-label{font-size:10px;letter-spacing:.16em;color:var(--gold);margin-bottom:10px;}
+.summary-text{font-size:14px;line-height:2.;color:rgba(255,255,255,.88);}
+
+/* 维度报告块 */
+.rblock{margin-bottom:14px;border-radius:14px;overflow:hidden;border:.5px solid var(--bd);}
+.rblock-hd{padding:12px 18px;font-size:11px;letter-spacing:.14em;color:#fff;background:var(--ink);display:flex;align-items:center;gap:6px;}
+.rblock-hd-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.4);}
+.rblock-body{padding:20px 18px;font-size:14px;line-height:2.05;color:var(--ink);background:#fff;}
+.rblock.gold-bd{border-color:rgba(200,169,110,.25);}.rblock.gold-bd .rblock-hd{background:#7a5a10;}
+.rblock.red-bd{border-color:rgba(139,32,0,.15);}.rblock.red-bd .rblock-hd{background:#6a2000;}
+.rblock.jade-bd{border-color:rgba(29,158,117,.2);}.rblock.jade-bd .rblock-hd{background:#0f6e56;}.rblock.jade-bd .rblock-body{background:var(--jade-light);}
+
+/* 判决金句 */
+.verdict{margin:12px 0 0;padding:12px 14px;background:var(--gold-bg);border-left:2.5px solid var(--gold);font-size:13.5px;color:var(--ink);line-height:1.9;font-style:italic;}
+
+/* CTA */
+.cta-outer{margin-top:20px;border-radius:14px;overflow:hidden;}
+.cta-hd{background:var(--ink);padding:24px 20px;text-align:center;}
+.cta-glyph{font-size:16px;color:var(--gold);letter-spacing:.3em;margin-bottom:8px;}
+.cta-title{font-size:16px;color:#fff;line-height:1.7;letter-spacing:.04em;}
+.cta-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:5px;line-height:1.9;}
+.cta-body{background:var(--warm);padding:22px 20px;}
+.cta-card{background:#fff;border-radius:10px;padding:18px;border:.5px solid var(--bd);margin-bottom:12px;}
+.cta-book{text-align:center;font-size:18px;font-weight:500;color:var(--gold);margin-bottom:8px;letter-spacing:.04em;}
+.cta-book-sub{text-align:center;font-size:11px;color:var(--ink3);letter-spacing:.08em;margin-bottom:14px;}
+.cta-includes{font-size:13px;color:var(--ink2);line-height:2.1;margin-bottom:16px;}
+.cta-action{text-align:center;font-size:13px;color:var(--ink2);margin-bottom:12px;}
+.cta-btn{width:100%;padding:14px;background:var(--jade);border:none;border-radius:8px;font-size:14px;color:#fff;cursor:pointer;font-family:inherit;letter-spacing:.06em;}
+.cta-wx{text-align:center;font-size:11px;color:var(--ink3);margin-top:8px;line-height:2;}
+
+/* 裂变 */
+.fission-card{background:#fff;border-radius:10px;padding:18px;border:.5px solid var(--bd);}
+.fission-title{font-size:14px;color:var(--ink);margin-bottom:6px;font-weight:500;}
+.fission-desc{font-size:13px;color:var(--ink3);line-height:1.9;margin-bottom:12px;}
+.fission-text{font-size:13px;color:var(--ink);line-height:1.9;padding:10px 12px;background:var(--warm);border-radius:8px;margin-bottom:12px;}
+.fission-btn{width:100%;padding:12px;background:var(--ink);border:none;border-radius:8px;font-size:13px;color:var(--gold);cursor:pointer;font-family:inherit;letter-spacing:.06em;}
+.share-tip{text-align:center;font-size:12px;color:var(--ink3);margin-top:14px;line-height:2.;letter-spacing:.04em;}
+.footer{text-align:center;padding:20px 0 8px;font-size:10px;color:var(--ink3);letter-spacing:.08em;line-height:2.}
+</style>
+</head>
+<body>
+<div class="pg">
+
+<!-- 封面 -->
+<div id="page-cover" class="page active">
+  <div class="inner">
+    <div class="seal"><div class="seal-ch">观</div></div>
+    <div class="brand">家道·家明</div>
+    <div class="brand-en">FAMILY SYSTEM · INSIGHT</div>
+    <div class="gold-sep"></div>
+    <div class="cover-title">内观家道</div>
+    <div class="cover-desc">
+      孩子身上的每一个问题<br>
+      都是这个家庭系统在说话<br><br>
+      18问，照见你家的真相
+    </div>
+    <div class="cover-mid">
+      <div class="dims-row">
+        <span class="dim-pill">边界</span>
+        <span class="dim-pill">情绪</span>
+        <span class="dim-pill">序位</span>
+        <span class="dim-pill">习惯</span>
+        <span class="dim-pill">信念</span>
+        <span class="dim-pill">夫妻</span>
+      </div>
+      <button class="start-btn" id="startBtn">开始内观</button>
+      <div class="cover-note">免费 · 约3分钟 · 无需注册</div>
+    </div>
+  </div>
+  <div class="footer">家道·家明 · 内观家道</div>
+</div>
+
+<!-- 答题页 -->
+<div id="page-quiz" class="page">
+  <div class="hd">
+    <div class="quiz-brand">家道·家明</div>
+    <div class="quiz-num" id="quizNum">第1题 / 共18题</div>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="prog"></div></div>
+  <div class="dim-label"><span class="dim-tag" id="dimTag">边界</span></div>
+  <div class="q-card">
+    <div class="q-text" id="qText"></div>
+    <div class="opts" id="opts"></div>
+  </div>
+</div>
+
+<!-- 推演动画页 -->
+<div id="page-loading" class="page">
+  <div class="inner">
+    <div class="loading-seal"><div class="loading-ch">推</div></div>
+    <div class="loading-title">正在推演你的家庭系统</div>
+    <div class="loading-lines" id="loadingLines">
+      <div class="loading-line">· 观其行，知其根……</div>
+      <div class="loading-line">· 推演边界与情绪……</div>
+      <div class="loading-line">· 照见序位与习惯……</div>
+      <div class="loading-line">· 溯源家庭系统根本……</div>
+      <div class="loading-line">· 推断即将呈现……</div>
+    </div>
+    <div class="loading-dots">
+      <div class="ldot"></div><div class="ldot"></div><div class="ldot"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 报告页 -->
+<div id="page-report" class="page">
+  <div class="rcov">
+    <div class="rseal"><div class="rseal-ch">见</div></div>
+    <div class="rtitle">家道·家明 · 内观报告</div>
+    <div class="rdate" id="rdate"></div>
+  </div>
+
+  <div class="type-block">
+    <div class="type-label">你的家庭系统状态</div>
+    <div class="type-name" id="rtype"></div>
+    <div class="type-tag" id="rtag"></div>
+  </div>
+
+  <div class="summary-block">
+    <div class="summary-label">一言以蔽之</div>
+    <div class="summary-text" id="rsummary"></div>
+  </div>
+
+  <div id="rblocks"></div>
+
+  <!-- CTA -->
+  <div class="cta-outer">
+    <div class="cta-hd">
+      <div class="cta-glyph">家道正见</div>
+      <div class="cta-title">照见了，还要知道怎么走</div>
+      <div class="cta-sub">进群，免费领取《家道正见》</div>
+    </div>
+    <div class="cta-body">
+      <div class="cta-card">
+        <div class="cta-book">《家道正见》</div>
+        <div class="cta-book-sub">家道·家明 · 家庭系统重建指南</div>
+        <div class="cta-includes">
+          · 你的家庭系统类型深度解读<br>
+          · 这个问题是怎么形成的，古人如何破解<br>
+          · 天道·人道·家道三层逻辑与行动方案<br>
+          · 7天家庭系统重建落地指引
+        </div>
+        <div class="cta-action">私信我「进群」，进群即可免费领取</div>
+        <button class="cta-btn" id="ctaBtn">复制微信号，私信进群</button>
+        <div class="cta-wx">微信：ym531423504 · 备注「家道」</div>
+      </div>
+
+      <div class="fission-card">
+        <div class="fission-title">你比大多数父母先看见了</div>
+        <div class="fission-desc">把这个发给身边同样在为孩子发愁的朋友，可能是你给他今年最有价值的一件事。</div>
+        <div class="fission-text" id="shareText">我刚做了一个家庭系统内观，说的太准了，你也去试试。免费，就18道题。（发给朋友时替换为你的链接）</div>
+        <button class="fission-btn" id="shareBtn">复制分享文案</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="share-tip">渡人渡己 · 知之者不如好之者，好之者不如乐之者</div>
+  <div class="footer">家道·家明 · 内观家道 · 每份报告根据你的回答推断生成</div>
+</div>
+
+</div>
+<script>
+(function(){
+'use strict';
+
+// ══════════════════════════════
+// 18题，6维度，每维度3题
+// 每个选项带：code（用于推断）+ desc（用于报告中个性化还原）
+// ══════════════════════════════
+var QS = [
+  // ── 边界 ──
+  {dim:'boundary', dimName:'边界',
+   q:'孩子写作业，你通常在哪？',
+   opts:[
+     {t:'不在旁边，他自己写完', code:'放手', desc:'不在旁边，让他自己写'},
+     {t:'坐在旁边，随时准备帮忙', code:'陪伴', desc:'坐在旁边随时待命'},
+     {t:'时不时过来看一眼', code:'检查', desc:'时不时过来检查一眼'},
+     {t:'盯着他，一写错就指出来', code:'控制', desc:'盯着他一写错就指出来'}
+   ]},
+  {dim:'boundary', dimName:'边界',
+   q:'孩子跟同学闹矛盾，你怎么处理？',
+   opts:[
+     {t:'让他自己想办法解决', code:'放手', desc:'让他自己去解决'},
+     {t:'听他说，给点方向', code:'引导', desc:'听他说完给点方向'},
+     {t:'你帮他分析谁对谁错', code:'越界', desc:'你来分析谁对谁错'},
+     {t:'直接找对方家长或老师', code:'越界', desc:'直接出面找对方家长'}
+   ]},
+  {dim:'boundary', dimName:'边界',
+   q:'孩子的房间，谁在管？',
+   opts:[
+     {t:'他自己负责', code:'放手', desc:'他自己负责自己的房间'},
+     {t:'你提醒，他来收', code:'提醒', desc:'你提醒他自己来收拾'},
+     {t:'说了几句，最后你收了', code:'代劳', desc:'说了几句最后还是你收了'},
+     {t:'基本你在收', code:'代劳', desc:'基本都是你在收拾'}
+   ]},
+
+  // ── 情绪 ──
+  {dim:'emotion', dimName:'情绪',
+   q:'孩子考砸了，你第一句话是什么？',
+   opts:[
+     {t:'没事，我们看看哪里能改进', code:'接纳', desc:'说没事看看怎么改进'},
+     {t:'怎么考的，哪里丢分了', code:'质问', desc:'马上问哪里丢分了'},
+     {t:'说了多少次了，你就是不听', code:'指责', desc:'说你说了多少次他不听'},
+     {t:'没说话，但脸色很难看', code:'冷暴力', desc:'没说话但脸色难看'}
+   ]},
+  {dim:'emotion', dimName:'情绪',
+   q:'你心情不好时，孩子会感觉到吗？',
+   opts:[
+     {t:'尽量不带情绪，他感觉不到', code:'稳定', desc:'尽量控制不让他感受到'},
+     {t:'会感觉到，你也不太能控制', code:'波动', desc:'他能感觉到你也控制不住'},
+     {t:'经常因为别的事迁怒他', code:'失控', desc:'经常把情绪发到他身上'},
+     {t:'不想理他，让他别烦你', code:'冷暴力', desc:'不想理他让他别来烦你'}
+   ]},
+  {dim:'emotion', dimName:'情绪',
+   q:'孩子对你发脾气，你通常怎么回？',
+   opts:[
+     {t:'先冷静下来，听他说完', code:'稳定', desc:'先冷静听他说完'},
+     {t:'也上火，但强忍着', code:'压制', desc:'也上火但强忍着没发'},
+     {t:'直接爆发，比他还大声', code:'失控', desc:'直接爆发比他还大声'},
+     {t:'冷处理，不理他', code:'冷暴力', desc:'冷处理不理他'}
+   ]},
+
+  // ── 序位 ──
+  {dim:'order', dimName:'序位',
+   q:'家里的大事，谁说了算？',
+   opts:[
+     {t:'夫妻商量，共同决定', code:'平等', desc:'夫妻商量共同决定'},
+     {t:'基本是你说了算', code:'独断', desc:'基本是你一个人说了算'},
+     {t:'基本是另一半说了算', code:'服从', desc:'基本是另一半说了算'},
+     {t:'各管各的，很少商量', code:'分裂', desc:'各管各的很少一起商量'}
+   ]},
+  {dim:'order', dimName:'序位',
+   q:'孩子在家里的地位是什么样的？',
+   opts:[
+     {t:'有发言权，但大人说了算', code:'有序', desc:'他有发言权但大人说了算'},
+     {t:'偶尔听他的，看情况', code:'有条件', desc:'有时候听他的看情况'},
+     {t:'全家围着他转，他说啥就是啥', code:'中心', desc:'全家围着他转他说啥是啥'},
+     {t:'他不敢表达意见', code:'压制', desc:'他在家里不敢表达意见'}
+   ]},
+  {dim:'order', dimName:'序位',
+   q:'父亲在这个家里的存在感强吗？',
+   opts:[
+     {t:'很强，孩子的事他都有参与', code:'在位', desc:'很强孩子的事他都参与'},
+     {t:'还可以，重要的事会出现', code:'边缘', desc:'重要的事他会出现'},
+     {t:'比较弱，基本是你在管', code:'缺位', desc:'比较弱基本是你在管'},
+     {t:'几乎没有存在感', code:'消失', desc:'父亲几乎没有存在感'}
+   ]},
+
+  // ── 习惯 ──
+  {dim:'habit', dimName:'习惯',
+   q:'孩子每天使用手机、游戏的时间？',
+   opts:[
+     {t:'有约定，基本能遵守', code:'自律', desc:'有约定他基本能自己遵守'},
+     {t:'约定经常被打破，需要催', code:'他律', desc:'约定经常被打破需要提醒'},
+     {t:'没有约定，你在旁边盯着', code:'管控', desc:'没约定你在旁边盯着管'},
+     {t:'管不住，随他了', code:'失控', desc:'根本管不住随他了'}
+   ]},
+  {dim:'habit', dimName:'习惯',
+   q:'孩子晚上几点睡觉这件事，是什么状态？',
+   opts:[
+     {t:'有固定时间，到点他知道去睡', code:'自律', desc:'有固定时间他自己知道睡'},
+     {t:'需要提醒，但提醒了能遵守', code:'他律', desc:'需要提醒但提醒了能遵守'},
+     {t:'每天要催，拖到很晚才睡', code:'拖延', desc:'每天要催才睡拖得很晚'},
+     {t:'时间完全混乱，没有规律', code:'失控', desc:'睡觉时间完全混乱没规律'}
+   ]},
+  {dim:'habit', dimName:'习惯',
+   q:'你们家有没有固定的家庭时间（一起吃饭、出游等）？',
+   opts:[
+     {t:'有，每周都有', code:'稳定', desc:'有每周都有固定家庭时间'},
+     {t:'偶尔有，看情况', code:'随性', desc:'偶尔有看情况'},
+     {t:'很少，各忙各的', code:'疏离', desc:'很少各忙各的'},
+     {t:'几乎没有', code:'缺失', desc:'几乎没有家庭共同时间'}
+   ]},
+
+  // ── 信念 ──
+  {dim:'belief', dimName:'信念',
+   q:'你对孩子最深的期待是什么？',
+   opts:[
+     {t:'他自己想成为的那个人', code:'自在', desc:'你期待他成为他自己想成为的人'},
+     {t:'健康快乐就好', code:'顺遂', desc:'你期待他健康快乐就好'},
+     {t:'有出息，在社会上立得住', code:'成就', desc:'你最深的期待是他有出息'},
+     {t:'听话懂事，少让你操心', code:'服从', desc:'你期待他听话懂事少操心'}
+   ]},
+  {dim:'belief', dimName:'信念',
+   q:'如果孩子将来很普通，你能接受吗？',
+   opts:[
+     {t:'完全能接受', code:'接纳', desc:'你完全能接受他将来普通'},
+     {t:'有点失落，但能接受', code:'勉强', desc:'有点失落但还是能接受'},
+     {t:'很难接受，会想推着他改变', code:'焦虑', desc:'很难接受会想办法推着他'},
+     {t:'不能接受，必须要有出息', code:'恐惧', desc:'不能接受一定要让他有出息'}
+   ]},
+  {dim:'belief', dimName:'信念',
+   q:'你觉得孩子现在的状态，主要是谁的责任？',
+   opts:[
+     {t:'主要是家庭环境和父母', code:'自省', desc:'你认为主要是家庭环境的问题'},
+     {t:'孩子和父母都有责任', code:'平衡', desc:'你认为孩子和父母都有责任'},
+     {t:'主要是孩子自己的问题', code:'外归', desc:'你认为主要是孩子自己的问题'},
+     {t:'说不清楚，感觉都有点责任', code:'模糊', desc:'说不清楚感觉都有点责任'}
+   ]},
+
+  // ── 夫妻 ──
+  {dim:'couple', dimName:'夫妻',
+   q:'你和另一半在教育孩子上，是什么状态？',
+   opts:[
+     {t:'基本一致，方向相同', code:'协同', desc:'你们方向基本一致'},
+     {t:'有分歧，但能私下商量', code:'协商', desc:'有分歧能私下商量解决'},
+     {t:'经常意见相反，各说各的', code:'分歧', desc:'经常意见相反各说各的'},
+     {t:'基本是你一个人管，另一半不管', code:'缺位', desc:'基本是你一个人在管孩子'}
+   ]},
+  {dim:'couple', dimName:'夫妻',
+   q:'孩子面前，你们夫妻之间的关系是什么状态？',
+   opts:[
+     {t:'有温度，经常有说有笑', code:'温暖', desc:'夫妻之间有温度经常有说有笑'},
+     {t:'正常，不好也不坏', code:'平淡', desc:'夫妻关系正常不好也不坏'},
+     {t:'冷战状态，表面维持', code:'冷漠', desc:'经常冷战表面维持'},
+     {t:'经常当着孩子面争吵', code:'冲突', desc:'经常当着孩子面争吵'}
+   ]},
+  {dim:'couple', dimName:'夫妻',
+   q:'你和另一半，发生分歧时通常怎么处理？',
+   opts:[
+     {t:'私下好好谈，找到共识', code:'协作', desc:'发生分歧你们私下好好谈'},
+     {t:'一方妥协，另一方说了算', code:'压制', desc:'一方妥协听另一方的'},
+     {t:'各说各的，谁也说服不了谁', code:'对峙', desc:'各说各的谁也说服不了谁'},
+     {t:'冷处理，不了了之', code:'回避', desc:'冷处理不了了之'}
+   ]}
+];
+
+// ══ 推断引擎 ══
+// 核心逻辑：不归纳，是推断
+// 从每维度3道题的具体选择里，推断出家长没意识到的那层
+
+function diagnose(dim, items) {
+  // items: [{code, desc}, ...]
+  var codes = items.map(function(i){return i.code;});
+  var descs = items.map(function(i){return i.desc;});
+
+  if (dim === 'boundary') {
+    var ctrlCount = codes.filter(function(c){return c==='控制'||c==='代劳'||c==='越界';}).length;
+    var looseCount = codes.filter(function(c){return c==='放手';}).length;
+
+    if (ctrlCount >= 2) {
+      var specific = descs.filter(function(d){
+        return d.indexOf('盯着')>=0||d.indexOf('收拾')>=0||d.indexOf('家长')>=0;
+      });
+      var ex = specific.length > 0 ? specific[0] : descs[0];
+      return {
+        verdict: '你替孩子活了太多，他自己的那份越来越少',
+        text: '你'+ex+'——这只是一个例子，但这个模式渗透在你们日常的每一件小事里。\n\n天道有云：各就各位，各司其职。你占了他的位，他就只能退到旁边等你。不是他懒，是你的存在，让他的主动性没有了用武之地。\n\n孩子身上表现出来的拖拉、等待、没有自觉性，根源不在他，在于这个家从来没有给他足够的空间去承担自己的事。你管的越多，他长的越少。这不是爱的问题，是方向的问题。'
+      };
+    } else if (looseCount >= 2) {
+      return {
+        verdict: '你给了他空间，他才有机会长出自己',
+        text: '你选择放手让他承担自己的事，这不是偷懒，是最深的信任。\n\n古人说：父母之爱子，则为之计深远。真正的计深远，不是替他把路铺平，是让他学会走路。\n\n你在边界这件事上做得比大多数父母清醒。他知道这是他自己的事，就会长出自己的责任感。这份责任感，比任何技能都值钱。'
+      };
+    } else {
+      return {
+        verdict: '边界模糊，你在试图控制又不断妥协',
+        text: '你在陪着、提醒着、偶尔替他做了——这种半进半退的状态，是最消耗人的。\n\n你不是不爱他，你是不确定该管还是不该管。这个不确定，孩子感受得到，他也跟着不确定——到底该靠自己，还是等你来？\n\n边界不清，孩子就找不到自己该站的位置。'
+      };
+    }
+  }
+
+  if (dim === 'emotion') {
+    var negCount = codes.filter(function(c){
+      return c==='指责'||c==='失控'||c==='冷暴力';
+    }).length;
+    var stableCount = codes.filter(function(c){return c==='稳定'||c==='接纳';}).length;
+
+    if (negCount >= 2) {
+      var ex2 = descs[codes.indexOf(codes.find(function(c){return c==='指责'||c==='失控'||c==='冷暴力';}))];
+      return {
+        verdict: '你的情绪是这个家的天气，孩子每天看天气长大',
+        text: '孩子考砸了，'+descs[0]+'；你心情不好时，'+descs[1]+'。\n\n这不是偶然，这是这个家情绪流动的方式。天道至公，气场不正，则家运不宁。你的情绪状态是这个家的底色，孩子每天在这个颜色里呼吸。\n\n长期在不稳定情绪里长大的孩子，会发展出两种自我保护：要么讨好，时刻揣摩你的脸色；要么对抗，用激烈来抵抗这种不安全感。不管哪种，都不是他本来应该有的样子。\n\n你的情绪不是他的错，但他在为你的情绪付出代价。'
+      };
+    } else if (stableCount >= 2) {
+      return {
+        verdict: '你是这个家的定海神针，孩子心里有底',
+        text: '情绪稳定，是父母给孩子最贵的礼物，没有之一。\n\n你在孩子考砸了的时候没有先爆发，你能控制不把自己的情绪带给他——这件事，绝大多数父母做不到。\n\n孩子在一个情绪稳定的家里长大，他内心会有一个锚。无论外面风浪多大，他知道家是安全的。这份安全感，是他一生底气的来源。'
+      };
+    } else {
+      return {
+        verdict: '你情绪时好时坏，孩子学会了看你脸色过日子',
+        text: descs[0]+'，'+descs[1]+'——孩子在观察这些，比你想象的更仔细。\n\n不是说你情绪不好就是坏父母，是说当情绪的波动成为这个家的日常，孩子就把大量的精力放在了读你的状态上，而不是感受自己。\n\n人道讲：修身，方能齐家。情绪的修炼，是所有修炼的起点。'
+      };
+    }
+  }
+
+  if (dim === 'order') {
+    var absentCount = codes.filter(function(c){return c==='消失'||c==='缺位'||c==='分裂';}).length;
+    var centerCount = codes.filter(function(c){return c==='中心'||c==='压制'||c==='独断';}).length;
+
+    if (absentCount >= 2) {
+      return {
+        verdict: '这个家的结构里，有一个位置空着，孩子感受得到',
+        text: '家里'+descs[2]+'——父亲的缺席，在这个家庭系统里留下了一个空缺。\n\n天道讲阴阳，人道讲父母。家庭的序位，是孩子认识世界的第一张地图。父亲在不在位，决定了孩子对权威、对力量、对男女关系的第一印象。\n\n那个空缺不是没有影响，它会让孩子在外面的世界里，用各种方式去寻找那个缺失的部分。'
+      };
+    } else if (centerCount >= 2) {
+      return {
+        verdict: '序位乱了——孩子不在他该在的位置',
+        text: descs[1]+'——孩子成了这个家的中心，或者某个人的意志压着所有人。\n\n家道讲序位：长幼有序，各安其位。孩子在该在的位置，他才能知道边界在哪里，责任在哪里。\n\n被所有人围着的孩子，内心反而是不安全的——他不知道自己的边界在哪里，也不知道这个世界的规则是什么。他会在外面的关系里反复碰壁，因为他在家里从没学过真正的平等。'
+      };
+    } else {
+      return {
+        verdict: '序位基本清明，各在其位',
+        text: '家里大事你们商量着来，孩子有发言权但不主导，父亲也在场——这个结构是健康的。\n\n家道讲：各安其位，天下乃治。你们家基本做到了这一点。孩子在一个秩序清晰的家里长大，他知道规则是什么，知道该在哪里站，这是他走向社会最重要的底气之一。'
+      };
+    }
+  }
+
+  if (dim === 'habit') {
+    var chaosCount = codes.filter(function(c){return c==='失控'||c==='拖延'||c==='疏离'||c==='缺失';}).length;
+    var selfCount = codes.filter(function(c){return c==='自律'||c==='稳定';}).length;
+
+    if (chaosCount >= 2) {
+      return {
+        verdict: '这个家没有稳定的节奏，孩子的内在也是乱的',
+        text: descs[0]+'，'+descs[1]+'——这个家的日常，缺少一种稳定的节律。\n\n道家讲：天地有常，四时有序。家庭的秩序，就是孩子人生的第一个节律训练。一个生活没有节律的家里长大的孩子，他的内心也是混乱的——他不知道什么时候该做什么，不知道什么是规律，他只知道跟着感觉走。\n\n孩子身上表现出来的拖拉、无序、自控力差，根源在这里，不在他的性格，在这个家的节律里。'
+      };
+    } else if (selfCount >= 2) {
+      return {
+        verdict: '这个家有节律，孩子的内在有锚',
+        text: '孩子'+descs[0]+'，家里'+descs[2]+'——这个家有一套稳定运行的节律。\n\n这不是小事。节律，是一个人最底层的自控力来源。孩子在有节律的家里长大，他的身体和心理都会形成稳定的内在节拍。这份节拍，会跟着他一生。'
+      };
+    } else {
+      return {
+        verdict: '秩序靠外力维持，孩子的自律是被催出来的',
+        text: descs[0]+'——这个家的秩序，是靠你在维持的。你在，规矩就在；你不在，规矩就没了。\n\n这不是孩子的错，是这个家还没有形成自然流动的节律。靠催出来的习惯，是脆弱的——催力一撤，动力就消失。'
+      };
+    }
+  }
+
+  if (dim === 'belief') {
+    var fearCount = codes.filter(function(c){return c==='恐惧'||c==='焦虑'||c==='外归';}).length;
+    var freeCount = codes.filter(function(c){return c==='自在'||c==='接纳'||c==='自省';}).length;
+
+    if (fearCount >= 2) {
+      return {
+        verdict: '你心里有一份深深的怕，孩子承接着这份怕在长大',
+        text: descs[0]+'，'+descs[1]+'——你心里住着一份对"不够好"的恐惧。\n\n这份恐惧不是坏的，它来自你对孩子的爱，来自你对这个世界的了解。但当恐惧成为驱动力，爱就变了味。\n\n孩子感受到的，不是你有多爱他，是你有多担心他。担心和信任，是两种完全不同的能量。在担心里长大的孩子，学会的是如何让父母放心，而不是如何做自己。\n\n天道无私，覆载万物。真正的爱，是给他空间长成他该有的样子，而不是你想要的样子。'
+      };
+    } else if (freeCount >= 2) {
+      return {
+        verdict: '你的信念清明，孩子的路是他自己的',
+        text: descs[0]+'，'+descs[2]+'——你能说出"他自己想成为的那个人"，这句话背后有很深的智慧。\n\n道德经说：为而不争，夫唯不争，天下莫能与之争。你在养育上做到了这一点——你在给，但不控制；你在陪，但不代替。\n\n这种信念，是给孩子最珍贵的礼物。'
+      };
+    } else {
+      return {
+        verdict: '你的期待和放手之间，还有一段路要走',
+        text: '你期待他'+descs[0]+'，但如果他将来很普通，你'+descs[1]+'——这之间有一个缝隙。\n\n这个缝隙，孩子能感受到。他知道你说"随他"，但也知道你心里还有期待。\n\n信念的力量在于一致性。你真正相信什么，比你说什么更有力量。'
+      };
+    }
+  }
+
+  if (dim === 'couple') {
+    var conflictCount = codes.filter(function(c){return c==='冲突'||c==='对峙'||c==='分歧';}).length;
+    var absentP = codes.filter(function(c){return c==='缺位';}).length;
+    var warmCount = codes.filter(function(c){return c==='协同'||c==='协作'||c==='温暖';}).length;
+
+    if (conflictCount >= 2 || (conflictCount >= 1 && absentP >= 1)) {
+      return {
+        verdict: '夫妻之间的裂缝，孩子在替你们承接',
+        text: descs[0]+'，'+descs[2]+'——夫妻之间的不合，是这个家庭系统最核心的变量。\n\n家道讲：夫妻同心，其利断金。夫妻关系，是家庭系统的根。根不稳，枝叶无论怎么修，都是治标不治本。\n\n孩子在父母的冲突或冷漠里长大，他用自己的问题来分散父母的注意力，或者用自己的乖顺来试图让家里和平。他在替你们扛着什么，但没有人告诉他，这不是他的事。'
+      };
+    } else if (absentP >= 1) {
+      return {
+        verdict: '一个人扛着整个家，这个结构迟早失衡',
+        text: descs[0]+'——教育这件事，基本落在你一个人身上。\n\n不是说你做得不够好，是说这个结构本身就是有问题的。一个人的能量是有限的，一个人的视角也是有限的。孩子需要的不只是你，是完整的家。\n\n另一半的缺位，不只是少了一个人帮忙，而是孩子在成长过程中，缺少了一种看待世界的角度。'
+      };
+    } else if (warmCount >= 2) {
+      return {
+        verdict: '夫妻同心，是给孩子最稳固的地基',
+        text: '你们'+descs[0]+'，发生分歧时'+descs[2]+'——夫妻关系是这个家最大的财富。\n\n孩子在温暖、有商有量的夫妻关系里长大，他学到的是：关系是可以修复的，分歧是可以化解的，爱是可以流动的。\n\n这是他走进自己的人生关系时，最重要的一份参照。'
+      };
+    } else {
+      return {
+        verdict: '夫妻之间有距离，孩子在这个距离里找位置',
+        text: '你们'+descs[0]+'，分歧时'+descs[2]+'——夫妻之间有一种平淡的距离，没有大的冲突，但也少了真正的连接。\n\n孩子在这种氛围里长大，他对亲密关系的认知会是：靠近是危险的，但也不知道温暖是什么样的。\n\n家是孩子学习关系的第一所学校，你们之间怎么相处，就是他的教材。'
+      };
+    }
+  }
+
+  return {verdict: '', text: ''};
+}
+
+// ══ 生成总述 ══
+function buildSummary(results) {
+  var issues = [];
+  var goods = [];
+  Object.keys(results).forEach(function(dim) {
+    var r = results[dim];
+    var dimNames = {boundary:'边界',emotion:'情绪',order:'序位',habit:'习惯',belief:'信念',couple:'夫妻'};
+    // 简单判断：verdict里有"替"、"乱"、"缺"、"裂"、"怕"、"松"、"催"的算问题维度
+    if (r.verdict.match(/替|乱|缺|裂|怕|催|模糊|距离|偶尔/)) {
+      issues.push(dimNames[dim]);
+    } else {
+      goods.push(dimNames[dim]);
+    }
+  });
+
+  if (issues.length === 0) {
+    return '你的家庭系统整体清明。各就各位，各司其职，这已经是很多家庭求而不得的状态。但"无大病"不等于"无小疾"，下面的六个维度，仍有值得打磨的地方。';
+  } else if (issues.length <= 2) {
+    return '你的家庭系统里，' + issues.join('与') + '是最值得认真看的地方。问题不在孩子，在这个家的运行方式上。下面的推断，你细看。';
+  } else {
+    return '你的家庭系统在' + issues.slice(0,3).join('、') + '等维度上都有失调。这些问题交织在一起，共同构成了孩子现在的处境。根不在孩子，在这个家的系统里。看见了，才是改变的起点。';
+  }
+}
+
+// ══ 生成标题和标签 ══
+function buildType(results) {
+  var issueCount = 0;
+  Object.values(results).forEach(function(r) {
+    if (r.verdict.match(/替|乱|缺|裂|怕|催|模糊|距离/)) issueCount++;
+  });
+
+  if (issueCount === 0) return {name:'家道清明 · 各安其位', tag:'安'};
+  if (issueCount <= 2) return {name:'局部失调 · 有根可寻', tag:'察'};
+  if (issueCount <= 4) return {name:'系统失衡 · 当归其位', tag:'调'};
+  return {name:'多维失序 · 需重建家道', tag:'重'};
+}
+
+// ══ 状态管理 ══
+var answers = [];
+var curIdx = 0;
+var dimResults = {};
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function setProg(i) {
+  document.getElementById('prog').style.width = (i / QS.length * 100) + '%';
+  document.getElementById('quizNum').textContent = '第' + (i+1) + '题 / 共' + QS.length + '题';
+}
+
+function renderQ(idx) {
+  var q = QS[idx];
+  document.getElementById('dimTag').textContent = q.dimName;
+  document.getElementById('qText').textContent = q.q;
+  var opts = document.getElementById('opts');
+  opts.innerHTML = '';
+  q.opts.forEach(function(o, i) {
+    var btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.textContent = o.t;
+    btn.addEventListener('click', function() {
+      if (btn.disabled) return;
+      document.querySelectorAll('.opt').forEach(function(b){b.disabled=true;});
+      btn.classList.add('sel');
+      answers[idx] = {dim: q.dim, code: o.code, desc: o.desc};
+      setTimeout(function() {
+        if (idx < QS.length - 1) {
+          curIdx++;
+          setProg(curIdx);
+          renderQ(curIdx);
+        } else {
+          startLoading();
+        }
+      }, 160);
+    });
+    opts.appendChild(btn);
+  });
+}
+
+function startLoading() {
+  showPage('page-loading');
+  var lines = document.querySelectorAll('.loading-line');
+  var i = 0;
+  function showNext() {
+    if (i < lines.length) {
+      lines[i].classList.add('show');
+      i++;
+      setTimeout(showNext, 600);
+    } else {
+      setTimeout(function() {
+        buildAndShowReport();
+      }, 500);
+    }
+  }
+  showNext();
+}
+
+function buildAndShowReport() {
+  // 按维度分组
+  var dimData = {};
+  answers.forEach(function(a) {
+    if (!dimData[a.dim]) dimData[a.dim] = [];
+    dimData[a.dim].push({code: a.code, desc: a.desc});
+  });
+
+  // 推断每个维度
+  var results = {};
+  Object.keys(dimData).forEach(function(dim) {
+    results[dim] = diagnose(dim, dimData[dim]);
+  });
+
+  // 渲染报告
+  var now = new Date();
+  document.getElementById('rdate').textContent = '内观时间：' + now.getFullYear() + '年' + (now.getMonth()+1) + '月' + now.getDate() + '日';
+
+  var type = buildType(results);
+  document.getElementById('rtype').textContent = type.name;
+  document.getElementById('rtag').textContent = type.tag;
+  document.getElementById('rsummary').textContent = buildSummary(results);
+
+  var dimOrder = ['boundary','emotion','order','habit','belief','couple'];
+  var dimNames = {boundary:'边界',emotion:'情绪',order:'序位',habit:'习惯',belief:'信念',couple:'夫妻'};
+  var colorClass = {boundary:'',emotion:'red-bd',order:'gold-bd',habit:'',belief:'gold-bd',couple:'red-bd'};
+
+  var container = document.getElementById('rblocks');
+  container.innerHTML = '';
+
+  dimOrder.forEach(function(dim) {
+    if (!results[dim]) return;
+    var r = results[dim];
+    var block = document.createElement('div');
+    block.className = 'rblock ' + (colorClass[dim] || '');
+    block.innerHTML =
+      '<div class="rblock-hd"><div class="rblock-hd-dot"></div>' + dimNames[dim] + '</div>' +
+      '<div class="rblock-body">' +
+        r.text.split('\n\n').map(function(p){return '<p style="margin-bottom:10px;">'+p+'</p>';}).join('') +
+        (r.verdict ? '<div class="verdict">' + r.verdict + '</div>' : '') +
+      '</div>';
+    container.appendChild(block);
+  });
+
+  showPage('page-report');
+}
+
+// ══ 按钮绑定 ══
+document.getElementById('startBtn').addEventListener('click', function() {
+  curIdx = 0;
+  answers = [];
+  showPage('page-quiz');
+  setProg(0);
+  renderQ(0);
+});
+
+document.getElementById('ctaBtn').addEventListener('click', function() {
+  var wx = 'ym531423504';
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(wx).then(function() {
+      alert('微信号已复制\n打开微信搜索：ym531423504\n添加后发送「进群」即可免费领取《家道正见》');
+    }).catch(function() {
+      prompt('请复制此微信号，添加后发送「进群」', wx);
+    });
+  } else {
+    prompt('请复制此微信号，添加后发送「进群」', wx);
+  }
+});
+
+document.getElementById('shareBtn').addEventListener('click', function() {
+  var text = document.getElementById('shareText').textContent;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function(){alert('分享文案已复制，发给你的朋友吧');});
+  } else {
+    prompt('复制此文案', text);
+  }
+});
+
+})();
+</script>
+</body>
+</html>
